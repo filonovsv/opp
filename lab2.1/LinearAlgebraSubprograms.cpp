@@ -79,7 +79,7 @@ void sub_vector_from_vector(double* v1, double* v2, size_t size, double*  result
 
 double norma(double* v, size_t size) {
 
-  double result = 0;
+  double result = 0.0;
 
 #pragma omp parallel for reduction(+:result)
   for (int i = 0; i < size; i++) {
