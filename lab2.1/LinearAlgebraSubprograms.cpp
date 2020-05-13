@@ -41,7 +41,7 @@ void mult_matrix_by_vector(double** m, double* v, size_t size, double*  result) 
 
 void mult_vector_by_vector(double* v1, double* v2, size_t size, double &result) {
 
-  result = 0;
+  result = 0.0;
 
 #pragma omp parallel for reducton(+:result)
   for (int i = 0; i < size; i++) {
