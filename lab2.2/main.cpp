@@ -32,6 +32,8 @@ int main(int argc, char** argv) {
     x[i] = 0;
   }
 
+  omp_set_num_threads(atoi(argv[1]));
+  
   double start = omp_get_wtime();
   solve(A, b, 2, x);
   double finish = omp_get_wtime();
