@@ -143,7 +143,7 @@ void solve(double** A, double* b, size_t size, double*  result) {
 
     //x = x + alpha * z;
     mult_double_by_vector(alpha, z, size, alpha_z);
-    add_vector_to_vector(result, alpha_z, size, result);//!
+    add_vector_to_vector(result, alpha_z, size, result);
 
     //old_r = r
     copy_vector_to_vector(r, old_r, size);
@@ -151,7 +151,7 @@ void solve(double** A, double* b, size_t size, double*  result) {
     //r = r - alpha * A *z;
     mult_double_by_matrix(alpha, A, size, alpha_A);
     mult_matrix_by_vector(alpha_A, z, size, alpha_A_z);
-    sub_vector_from_vector(r, alpha_A_z, size, r);//!
+    sub_vector_from_vector(r, alpha_A_z, size, r);
 
     //beta = (r * r) / (old_r*old_r);
     mult_vector_by_vector(r, r, size, rr);
