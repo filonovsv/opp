@@ -92,7 +92,10 @@ double norma(double* v, size_t size) {
     result += v[i] * v[i];
   }
 
-  result = sqrt(result);
+#pragma omp single
+  {
+    result = sqrt(result);
+  }
   return result;
 }
 
