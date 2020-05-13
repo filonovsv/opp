@@ -1,39 +1,55 @@
+#include "LinearAlgebraSubprograms.h"
 #include <iostream>
 #include <omp.h>
-#include "SquareMatrix.h"
-#include "Solver.h"
 
 using namespace std;
 
-int main(int argc, char* argv[]) {
+int main(int argc, char** argv) {
 
-  SquareMatrix A;
-  A = { {1.0, 2.0}, 
-        {3.0 ,1.0} }; 
-  vector<double> b;
-  b = { 1.0, 1.0 };
-  
-  omp_set_num_threads(atoi(argv[1]));
-  vector<double> x;
+  int size;
+  cin >> size;
+
+  double** A = new double*[size];
+  for (int i = 0; i < size; i++) {
+
+    A[i] = new double[size];
+  }
+
+  double* b = new double[size];
+
+  double* x = new double[size];
+
+  for (int i = 0; i < size; i++) {
+    for (int j = 0; j < size; j++) {
+
+      cin >> A[i][j];
+    }
+  }
+
+  for (int i = 0; i < size; i++) {
+
+    cin >> b[i];
+    x[i] = 0;
+  }
+
   double start = omp_get_wtime();
-  try {
-    Solver solver;
-    x = solver.solve(A, b);
-  }
-  catch (exception e) {
-    cout << e.what();
-    return -1;
-  }
+  solve(A, b, 2, x);
   double finish = omp_get_wtime();
-  
-  for (auto i : x) {
-    cout << i << " ";
+
+  for (int i = 0; i < 2; i++) {
+
+    cout << x[i] << " ";
   }
+  cout << endl << finish - start;
 
-  cout << endl;
+  for (int i = 0; i < size; i++) {
 
-  cout << finish - start;
+    delete[] A[i];
+  }
+  delete[] A;
+  delete[] b;
+  delete[] x;
 
-  getchar();
+  system("pause");
   return 0;
 }
