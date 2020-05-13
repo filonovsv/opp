@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
   }
 
   double start = omp_get_wtime();
-  solve(A, b, 2, x);
+  solve(A, b, size, x);
   double finish = omp_get_wtime();
 
   for (int i = 0; i < 2; i++) {
