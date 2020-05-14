@@ -18,8 +18,8 @@ void mult_matrix_by_vector(double** m, double* v, size_t size, double*  result) 
 
 #pragma omp parallel for
   for (int i = 0; i < size; i++) {
-    
-      result[i] = 0;
+
+    result[i] = 0;
   }
 
 #pragma omp parallel for
@@ -27,14 +27,8 @@ void mult_matrix_by_vector(double** m, double* v, size_t size, double*  result) 
 
     for (int j = 0; j < size; j++) {
 
-      result[i] += m[i][j];
+      result[i] += m[i][j] * v[j];
     }
-  }
-  
-#pragma omp parallel for
-  for (int i = 0; i < size; i++) {
-    
-    result[i] *= v[i];
   }
 }
 
