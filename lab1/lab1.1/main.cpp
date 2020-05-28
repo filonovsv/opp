@@ -48,15 +48,10 @@ int main(int argc, char** argv) {
   double* b = new double[size];
   double* x = new double[size];
 
-  if (mpi_rank == 0) {
-    for (size_t i = 0; i < size; ++i) {
-      b[i] = (double)size + 1.0;
-      x[i] = 0.0;
-    }
+  for (size_t i = 0; i < size; ++i) {
+    b[i] = (double)size + 1.0;
+    x[i] = 0.0;
   }
-
-  MPI_Bcast(b, size, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-  MPI_Bcast(x, size, MPI_DOUBLE, 0, MPI_COMM_WORLD);
  
   double start = MPI_Wtime();
 
