@@ -161,4 +161,5 @@ void solve(double* A, double* b, size_t size, double*  result, int mpi_size, int
   delete[] alpha_A_z;
   delete[] alpha_z;
   delete[] beta_z;
+  delete[] full_x;
 }
