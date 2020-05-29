@@ -2,7 +2,7 @@
 
 void mult_double_by_matrix(double x, double* m, size_t size, double*  result, int mpi_rank, int* revcounts);
 
-void mult_matrix_by_vector(double* m, double* v, size_t size, double*  result, int mpi_rank, int* revcounts, int* displs);
+void mult_matrix_by_vector(double* m, double* v, size_t size, double*  result, int mpi_rank, int* revcounts, int* displs, double* full x);
 
 void mult_vector_by_vector(double* v1, double* v2, double &result, int mpi_rank, int* revcounts);
 
