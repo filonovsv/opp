@@ -11,10 +11,7 @@ void mult_double_by_matrix(double x, double* m, size_t size, double*  result, in
   }
 }
 
-void mult_matrix_by_vector(double* m, double* v, size_t size, double*  result, int mpi_rank, int* revcounts, int* displs) {
-
-
-  double* full_x = new double[size];
+void mult_matrix_by_vector(double* m, double* v, size_t size, double*  result, int mpi_rank, int* revcounts, int* displs, double* full_x) {
 
   MPI_Allgatherv(v, revcounts[mpi_rank], MPI_DOUBLE, full_x, revcounts, displs, MPI_DOUBLE, MPI_COMM_WORLD);
 
@@ -29,8 +26,6 @@ void mult_matrix_by_vector(double* m, double* v, size_t size, double*  result, i
       result[i] += m[i * size + j] * full_x[j];
     }
   }
-
-  delete[] full_x;
 }
 
 void mult_vector_by_vector(double* v1, double* v2, double &result, int mpi_rank, int* revcounts) {
@@ -115,9 +110,10 @@ void solve(double* A, double* b, size_t size, double*  result, int mpi_size, int
   double* beta_z = new double[revcounts[mpi_rank]];
   double rr;
   double oldr_oldr;
+  double* full_x = new double[size];
 
   //r = b - A*x;
-  mult_matrix_by_vector(A, result, size, Ax, mpi_rank, revcounts, displs);
+  mult_matrix_by_vector(A, result, size, Ax, mpi_rank, revcounts, displs, full_x);
   sub_vector_from_vector(b, Ax, r, mpi_rank, revcounts);
 
   //z = r;
@@ -129,7 +125,7 @@ void solve(double* A, double* b, size_t size, double*  result, int mpi_size, int
 
     //alpha = (r*r) / (A * z * z);
     mult_vector_by_vector(r, r, rr, mpi_rank, revcounts);
-    mult_matrix_by_vector(A, z, size, Az, mpi_rank, revcounts, displs);
+    mult_matrix_by_vector(A, z, size, Az, mpi_rank, revcounts, displs, full_x);
     mult_vector_by_vector(Az, z, Azz, mpi_rank, revcounts);
     alpha = rr / Azz;
 
@@ -142,7 +138,7 @@ void solve(double* A, double* b, size_t size, double*  result, int mpi_size, int
 
     //r = r - alpha * A *z;
     mult_double_by_matrix(alpha, A, size, alpha_A, mpi_rank, revcounts);
-    mult_matrix_by_vector(alpha_A, z, size, alpha_A_z, mpi_rank, revcounts, displs);
+    mult_matrix_by_vector(alpha_A, z, size, alpha_A_z, mpi_rank, revcounts, displs, full_x);
     sub_vector_from_vector(r, alpha_A_z, r, mpi_rank, revcounts);
 
     //beta = (r * r) / (old_r*old_r);
