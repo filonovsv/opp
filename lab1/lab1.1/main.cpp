@@ -38,36 +38,36 @@ int main(int argc, char** argv) {
   }
 
 
-    double* b = new double[size];
-    double* x = new double[size];
+  double* b = new double[size];
+  double* x = new double[size];
 
-    for (size_t i = 0; i < size; ++i) {
-      b[i] = (double)size + 1.0;
-      x[i] = 0.0;
-    }
-
-    double start = MPI_Wtime();
-
-    solve(A, b, size, x, mpi_size, mpi_rank, revcounts, displs);
-
-
-    double finish = MPI_Wtime();
-
-    if (mpi_rank == 0) {
-      std::cout << "result: ";
-      for (size_t i = 0; i < size; ++i)
-      {
-        std::cout << x[i] << " ";
-      }
-      std::cout << std::endl;
-      std::cout << "for: " << finish - start;
-    }
-
-    thread_manager_finalize(revcounts, displs);
-    MPI_Finalize();
-    delete[] A;
-    delete[] b;
-    delete[] x;
-
-    return 0;
+  for (size_t i = 0; i < size; ++i) {
+    b[i] = (double)size + 1.0;
+    x[i] = 0.0;
   }
+
+  double start = MPI_Wtime();
+
+  solve(A, b, size, x, mpi_size, mpi_rank, revcounts, displs);
+
+
+  double finish = MPI_Wtime();
+
+  if (mpi_rank == 0) {
+    std::cout << "result: ";
+    for (size_t i = 0; i < size; ++i)
+    {
+      std::cout << x[i] << " ";
+    }
+    std::cout << std::endl;
+    std::cout << "for: " << finish - start;
+  }
+
+  thread_manager_finalize(revcounts, displs);
+  MPI_Finalize();
+  delete[] A;
+  delete[] b;
+  delete[] x;
+
+  return 0;
+}
