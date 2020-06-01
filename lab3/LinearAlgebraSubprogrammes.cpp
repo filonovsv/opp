@@ -95,8 +95,8 @@ void mult_matrix_by_matrix(double* A, double* B, double* C, int* rank, int size,
   int* sendcounts_C = new int[size];
   int* displs_C = new int[size];
 
-  for (int i = 0; i < dims[0]; i++) {
-    for (int j = 0; j < dims[1]; j++) {
+  for (int i = 0; i < dims[0]; ++i) {
+    for (int j = 0; j < dims[1]; ++j) {
       displs_C[i * dims[1] + j] = dims[1] * row_per_proc * i + j;
       sendcounts_C[i * dims[1] + j] = 1;
     }
