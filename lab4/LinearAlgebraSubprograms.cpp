@@ -25,11 +25,11 @@ double ro(double x, double y, double z) {
 
 void solve(int rank, int size, double &delta) {
 
-  int nx;
+  int nx = 0;
   int ny = NY;
   int nz = NZ;
 
-  int shift;
+  int shift = 0;
 
   void thread_manager_init(int rank, int size, int NX, int &nx, int &shift);
 
