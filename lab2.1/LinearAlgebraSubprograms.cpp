@@ -2,29 +2,33 @@
 #include <algorithm>
 #include <omp.h>
 
-void mult_double_by_matrix(double x, double** m, size_t size, double**  result) {
+void mult_double_by_matrix(double x, double** m, const size_t size, double**  result) {
 
 #pragma omp parallel for
   for (int i = 0; i < size; i++) {
-
+#pragma omp parallel for
     for (int j = 0; j < size; j++) {
 
-      result[i][j] = m[i][j] * x;
+      result[i][j] = 0.0;
+    }
+  }
+
+#pragma omp parallel for
+  for (int i = 0; i < size; i++) {
+#pragma omp parallel for
+    for (int j = 0; j < size; j++) {  
+
+      result[i][j] += m[i][j] * x;
     }
   }
 }
 
-void mult_matrix_by_vector(double** m, double* v, size_t size, double*  result) {
+void mult_matrix_by_vector(double** m, double* v, const size_t size, double*  result) {
 
 #pragma omp parallel for
   for (int i = 0; i < size; i++) {
-
-    result[i] = 0;
-  }
-
+    result[i] = 0.0;
 #pragma omp parallel for
-  for (int i = 0; i < size; i++) {
-
     for (int j = 0; j < size; j++) {
 
       result[i] += m[i][j] * v[j];
@@ -32,19 +36,18 @@ void mult_matrix_by_vector(double** m, double* v, size_t size, double*  result) 
   }
 }
 
-
-void mult_vector_by_vector(double* v1, double* v2, size_t size, double &result) {
+void mult_vector_by_vector(double* v1, double* v2, const size_t size, double &result) {
 
   result = 0.0;
 
-#pragma omp parallel for reducton(+:result)
+#pragma omp parallel for 
   for (int i = 0; i < size; i++) {
 
     result += v1[i] * v2[i];
   }
 }
 
-void mult_double_by_vector(double x, double* v, size_t size, double*  result) {
+void mult_double_by_vector(double x, double* v, const size_t size, double*  result) {
 
 #pragma omp parallel for
   for (int i = 0; i < size; i++) {
@@ -53,7 +56,7 @@ void mult_double_by_vector(double x, double* v, size_t size, double*  result) {
   }
 }
 
-void add_vector_to_vector(double* v1, double* v2, size_t size, double*  result) {
+void add_vector_to_vector(double* v1, double* v2, const size_t size, double*  result) {
 
 #pragma omp parallel for
   for (int i = 0; i < size; i++) {
@@ -62,7 +65,7 @@ void add_vector_to_vector(double* v1, double* v2, size_t size, double*  result) 
   }
 }
 
-void sub_vector_from_vector(double* v1, double* v2, size_t size, double*  result) {
+void sub_vector_from_vector(double* v1, double* v2, const size_t size, double*  result) {
 
 #pragma omp parallel for
   for (int i = 0; i < size; i++) {
@@ -71,21 +74,21 @@ void sub_vector_from_vector(double* v1, double* v2, size_t size, double*  result
   }
 }
 
-double norma(double* v, size_t size) {
+double norma(double* v, const size_t size) {
 
-  double result = 0.0;
+  double result = 0;
 
-#pragma omp parallel for reduction(+:result)
+#pragma omp parallel for
   for (int i = 0; i < size; i++) {
 
-    result += v[i] * v[i];
+    result = v[i] * v[i];
   }
 
   result = sqrt(result);
   return result;
 }
 
-void copy_vector_to_vector(double* from, double* to, size_t size) {
+void copy_vector_to_vector(double* from, double* to, const size_t size) {
 
 #pragma omp parallel for
   for (int i = 0; i < size; i++) {
@@ -94,9 +97,11 @@ void copy_vector_to_vector(double* from, double* to, size_t size) {
   }
 }
 
-void solve(double** A, double* b, size_t size, double*  result) {
+void solve(double** A, double* b, const size_t size, double*  result) {
 
-  const double epsilon = 1e-5;
+  omp_set_num_threads(4);
+
+  const double epsilon = 1e-3;
 
   double* r = new double[size];
   double* old_r = new double[size];
@@ -137,15 +142,13 @@ void solve(double** A, double* b, size_t size, double*  result) {
 
     //x = x + alpha * z;
     mult_double_by_vector(alpha, z, size, alpha_z);
-    add_vector_to_vector(result, alpha_z, size, result);
-
-    //old_r = r
-    copy_vector_to_vector(r, old_r, size);
+    add_vector_to_vector(result, alpha_z, size, result);//!
+    old_r = r;
 
     //r = r - alpha * A *z;
     mult_double_by_matrix(alpha, A, size, alpha_A);
     mult_matrix_by_vector(alpha_A, z, size, alpha_A_z);
-    sub_vector_from_vector(r, alpha_A_z, size, r);
+    sub_vector_from_vector(r, alpha_A_z, size, r);//!
 
     //beta = (r * r) / (old_r*old_r);
     mult_vector_by_vector(r, r, size, rr);
@@ -157,8 +160,7 @@ void solve(double** A, double* b, size_t size, double*  result) {
     add_vector_to_vector(r, beta_z, size, z);
 
   } while (norma(r, size) / b_norm > epsilon);
-
-
+  
   delete[] r;
   delete[] old_r;
   delete[] z;
@@ -173,5 +175,4 @@ void solve(double** A, double* b, size_t size, double*  result) {
   delete[] alpha_A_z;
   delete[] alpha_z;
   delete[] beta_z;
-
 }
