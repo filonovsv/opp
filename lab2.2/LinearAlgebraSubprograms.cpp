@@ -2,41 +2,23 @@
 #include <algorithm>
 #include <omp.h>
 
-void mult_double_by_matrix(double x, double** m, size_t size, double**  result) {
+void mult_double_by_matrix(double x, double** m, const size_t size, double**  result) {
 
 #pragma omp for
   for (int i = 0; i < size; i++) {
 
     for (int j = 0; j < size; j++) {
 
-      result[i][j] = 0;
-    }
-  }
-
-#pragma omp for
-  for (int i = 0; i < size; i++) {
-
-    for (int j = 0; j < size; j++) {
-
-      result[i][j] += m[i][j] * x;
+      result[i][j] = m[i][j] * x;
     }
   }
 }
 
-void mult_matrix_by_vector(double** m, double* v, size_t size, double*  result) {
+void mult_matrix_by_vector(double** m, double* v, const size_t size, double*  result) {
 
 #pragma omp for
   for (int i = 0; i < size; i++) {
-
-    for (int j = 0; j < size; j++) {
-
-      result[i] = 0;
-    }
-  }
-
-#pragma omp for
-  for (int i = 0; i < size; i++) {
-
+    result[i] = 0.0;
     for (int j = 0; j < size; j++) {
 
       result[i] += m[i][j] * v[j];
@@ -44,9 +26,9 @@ void mult_matrix_by_vector(double** m, double* v, size_t size, double*  result) 
   }
 }
 
-void mult_vector_by_vector(double* v1, double* v2, size_t size, double &result) {
+void mult_vector_by_vector(double* v1, double* v2, const size_t size, double &result) {
 
-  result = 0;
+  result = 0.0;
 
 #pragma omp for reducton(+:result)
   for (int i = 0; i < size; i++) {
@@ -55,7 +37,7 @@ void mult_vector_by_vector(double* v1, double* v2, size_t size, double &result) 
   }
 }
 
-void mult_double_by_vector(double x, double* v, size_t size, double*  result) {
+void mult_double_by_vector(double x, double* v, const size_t size, double*  result) {
 
 #pragma omp for
   for (int i = 0; i < size; i++) {
@@ -64,7 +46,7 @@ void mult_double_by_vector(double x, double* v, size_t size, double*  result) {
   }
 }
 
-void add_vector_to_vector(double* v1, double* v2, size_t size, double*  result) {
+void add_vector_to_vector(double* v1, double* v2, const size_t size, double*  result) {
 
 #pragma omp for
   for (int i = 0; i < size; i++) {
@@ -73,7 +55,7 @@ void add_vector_to_vector(double* v1, double* v2, size_t size, double*  result) 
   }
 }
 
-void sub_vector_from_vector(double* v1, double* v2, size_t size, double*  result) {
+void sub_vector_from_vector(double* v1, double* v2, const size_t size, double*  result) {
 
 #pragma omp for
   for (int i = 0; i < size; i++) {
@@ -82,9 +64,9 @@ void sub_vector_from_vector(double* v1, double* v2, size_t size, double*  result
   }
 }
 
-double norma(double* v, size_t size) {
+double norma(double* v, const size_t size) {
 
-  double result = 0;
+  double result = 0.0;
 
 #pragma omp parallel for reduction(+:result)
   for (int i = 0; i < size; i++) {
@@ -99,7 +81,7 @@ double norma(double* v, size_t size) {
   return result;
 }
 
-void copy_vector_to_vector(double* from, double* to, size_t size) {
+void copy_vector_to_vector(double* from, double* to, const size_t size) {
 
 #pragma omp  for
   for (int i = 0; i < size; i++) {
@@ -108,7 +90,7 @@ void copy_vector_to_vector(double* from, double* to, size_t size) {
   }
 }
 
-void solve(double** A, double* b, size_t size, double*  result) {
+void solve(double** A, double* b, const size_t size, double*  result) {
 
   const double epsilon = 1e-5;
 
